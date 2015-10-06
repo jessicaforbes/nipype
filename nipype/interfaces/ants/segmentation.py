@@ -795,3 +795,47 @@ class JointFusion(ANTSCommand):
         outputs['output_label_image'] = os.path.abspath(
             self.inputs.output_label_image)
         return outputs
+
+class AntsJointFusionInputSpec(ANTSCommandInputSpec):
+    dimension = traits.Enum(3, 2, 4, argstr='-d %d', usedefault=True,
+                            mandatory=True,
+                            desc='image dimension (2, 3, or 4)')
+
+
+class AntsJointFusionOutputSpec(TraitedSpec):
+    output_label_image = File(exists=True)
+    # TODO: optional outputs - output_posteriors, output_voting_weights
+
+
+class AntsJointFusion(ANTSCommand):
+    """
+    Examples
+    --------
+    """
+    input_spec = AntsJointFusionInputSpec
+    output_spec = AntsJointFusionOutputSpec
+    _cmd = 'antsjointfusion'
+
+    def _format_arg(self, opt, spec, val):
+        if opt == 'method':
+            if '[' in val:
+                retval = '-m {0}'.format(val)
+            else:
+                retval = '-m {0}[{1},{2}]'.format(
+                    self.inputs.method, self.inputs.alpha, self.inputs.beta)
+        elif opt == 'patch_radius':
+            retval = '-rp {0}'.format(self._format_xarray(val))
+        elif opt == 'search_radius':
+            retval = '-rs {0}'.format(self._format_xarray(val))
+        else:
+            if opt == 'warped_intensity_images':
+                assert len(val) == self.inputs.modalities * len(self.inputs.warped_label_images), "Number of intensity images and label maps must be the same {0}!={1}".format(
+                    len(val), len(self.inputs.warped_label_images))
+            return super(ANTSCommand, self)._format_arg(opt, spec, val)
+        return retval
+
+    def _list_outputs(self):
+        outputs = self._outputs().get()
+        outputs['output_label_image'] = os.path.abspath(
+            self.inputs.output_label_image)
+        return outputs
