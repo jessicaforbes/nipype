@@ -799,7 +799,29 @@ class JointFusion(ANTSCommand):
 class AntsJointFusionInputSpec(ANTSCommandInputSpec):
     dimension = traits.Enum(3, 2, 4, argstr='-d %d', usedefault=True,
                             mandatory=True,
-                            desc='image dimension (2, 3, or 4)')
+                            desc='This option forces the image to be treated '
+                                 'as a specified-dimensional image. If not '
+                                 'specified, the program tries to infer the '
+                                 'dimensionality from the input image.')
+    target_image = InputMultiPath(File(exists=True), argstr='-t %s...',
+                                  mandatory=True, desc='The target image (or '
+                                  'multimodal target images) assumed to be '
+                                  'aligned to a common image domain.')
+    atlas_image = InputMultiPath(File(exists=True), argstr="-g %s...",
+                                 mandatory=True, desc='The atlas image (or '
+                                 'multimodal atlas images) assumed to be '
+                                 'aligned to a common image domain.')
+    atlas_segmentation_image = InputMultiPath(File(exists=True), argstr="-l %s",
+                                        mandatory=True, desc='The atlas '
+                                        'segmentation images. For performing '
+                                        'label fusion the number of specified '
+                                        'segmentations should be identical to '
+                                        'the number of atlas image sets.')
+    alpha = traits.Float(default=0.1, usedefault=True, desc=('Regularization '
+                         'term added to matrix Mx for calculating the inverse. '
+                         'Default = 0.1'))
+    beta = traits.Int(default=2.0, usedefault=True, desc=('Exponent for mapping '
+                      'intensity difference to the joint error. Default = 2.0'))
 
 
 class AntsJointFusionOutputSpec(TraitedSpec):
