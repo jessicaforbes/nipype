@@ -822,6 +822,13 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
                          'Default = 0.1'))
     beta = traits.Int(default=2.0, usedefault=True, desc=('Exponent for mapping '
                       'intensity difference to the joint error. Default = 2.0'))
+    patch_metric = traits.Str(default='PC', argstr='--patch-metric %s', usedefault=True,
+                        desc=('Metric to be used in determining the most similar '
+                              'neighborhood patch. Options include Pearson\'s '
+                              'correlation (PC) and mean squares (MSQ). Default = '
+                              'PC (Pearson correlation).'))
+    mask_image = File(argstr='--mask-image %s', exists=True, desc='If a mask image '
+                      'is specified, fusion is only performed in the mask region.')
 
 
 class AntsJointFusionOutputSpec(TraitedSpec):
