@@ -828,11 +828,17 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
                          desc=('Retain atlas voting images. Default = false'))
     constrain_nonnegative = traits.Bool(False, argstr='-c', usedefault=True, #todo: check syntax
                          desc=('Constrain solution to non-negative weights.'))
+    patch_radius = traits.ListInt(minlen=3, maxlen=3, argstr='-p %s',
+                                  desc=('Patch radius for similarity measures.'
+                                        'Default: 2x2x2'))
     patch_metric = traits.Str(default='PC', argstr='-m %s', usedefault=True,
                         desc=('Metric to be used in determining the most similar '
                               'neighborhood patch. Options include Pearson\'s '
                               'correlation (PC) and mean squares (MSQ). Default = '
                               'PC (Pearson correlation).'))
+    search_radius = traits.ListInt(minlen=3, maxlen=3, argstr='-s %s',
+                                   desc='Search radius for similarity measures. '
+                                        'Default = 3x3x3')
     mask_image = File(argstr='--x %s', exists=True, desc='If a mask image '
                       'is specified, fusion is only performed in the mask region.')
     output_image = InputMultiPath(File(exists=True), argstr="-o %s...",
