@@ -812,11 +812,10 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
                                  'multimodal atlas images) assumed to be '
                                  'aligned to a common image domain.')
     atlas_segmentation_image = InputMultiPath(File(exists=True), argstr="-l %s",
-                                        mandatory=True, desc='The atlas '
-                                        'segmentation images. For performing '
-                                        'label fusion the number of specified '
-                                        'segmentations should be identical to '
-                                        'the number of atlas image sets.')
+                                  mandatory=True, desc='The atlas segmentation '
+                                  'images. For performing label fusion the number '
+                                  'of specified segmentations should be identical '
+                                  'to the number of atlas image sets.')
     alpha = traits.Float(default=0.1, usedefault=True, desc=('Regularization '
                          'term added to matrix Mx for calculating the inverse. '
                          'Default = 0.1'))
@@ -825,7 +824,11 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
     retain_label_posterior_images = traits.Bool(False, argstr='-r', usedefault=True, #todo: check syntax
                          desc=('Retain label posterior probability images. Requires '
                                'atlas segmentations to be specified. Default = false'))
-    patch_metric = traits.Str(default='PC', argstr='--m %s', usedefault=True,
+    retain_atlas_voting_images = traits.Bool(False, argstr='-f', usedefault=True, #todo: check syntax
+                         desc=('Retain atlas voting images. Default = false'))
+    constrain_nonnegative = traits.Bool(False, argstr='-c', usedefault=True, #todo: check syntax
+                         desc=('Constrain solution to non-negative weights.'))
+    patch_metric = traits.Str(default='PC', argstr='-m %s', usedefault=True,
                         desc=('Metric to be used in determining the most similar '
                               'neighborhood patch. Options include Pearson\'s '
                               'correlation (PC) and mean squares (MSQ). Default = '
