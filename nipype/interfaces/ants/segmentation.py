@@ -819,7 +819,7 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
     alpha = traits.Float(default=0.1, usedefault=True, desc=('Regularization '
                          'term added to matrix Mx for calculating the inverse. '
                          'Default = 0.1'))
-    beta = traits.Int(default=2.0, usedefault=True, desc=('Exponent for mapping '
+    beta = traits.Float(default=2.0, usedefault=True, desc=('Exponent for mapping '
                       'intensity difference to the joint error. Default = 2.0'))
     retain_label_posterior_images = traits.Bool(False, argstr='-r', usedefault=True, #todo: check syntax
                          desc=('Retain label posterior probability images. Requires '
