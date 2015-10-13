@@ -822,6 +822,9 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
                          'Default = 0.1'))
     beta = traits.Int(default=2.0, usedefault=True, desc=('Exponent for mapping '
                       'intensity difference to the joint error. Default = 2.0'))
+    retain_label_posterior_images = traits.Bool(False, argstr='-r', usedefault=True, #todo: check syntax
+                         desc=('Retain label posterior probability images. Requires '
+                               'atlas segmentations to be specified. Default = false'))
     patch_metric = traits.Str(default='PC', argstr='--m %s', usedefault=True,
                         desc=('Metric to be used in determining the most similar '
                               'neighborhood patch. Options include Pearson\'s '
