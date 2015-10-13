@@ -797,7 +797,7 @@ class JointFusion(ANTSCommand):
         return outputs
 
 class AntsJointFusionInputSpec(ANTSCommandInputSpec):
-    dimension = traits.Enum(3, 2, 4, argstr='-d %d', usedefault=True,
+    dimension = traits.Enum(3, 2, 4, argstr='-d %d', usedefault=True, #todo: usedefault??
                             mandatory=True,
                             desc='This option forces the image to be treated '
                                  'as a specified-dimensional image. If not '
@@ -882,9 +882,10 @@ class AntsJointFusion(ANTSCommand):
         elif opt == 'search_radius':
             retval = '-s {0}'.format(self._format_xarray(val))
         else:
-            if opt == 'warped_intensity_images':
-                assert len(val) == self.inputs.modalities * len(self.inputs.warped_label_images), "Number of intensity images and label maps must be the same {0}!={1}".format(
-                    len(val), len(self.inputs.warped_label_images))
+            if opt == 'atlas_segmentation_image':
+                assert len(val) == len(self.inputs.atlas_image), "Number of specified " \
+                    "segmentations should be identical to the number of atlas image " \
+                    "sets {0}!={1}".format(len(val), len(self.inputs.atlas_image))
             return super(ANTSCommand, self)._format_arg(opt, spec, val)
         return retval
 
