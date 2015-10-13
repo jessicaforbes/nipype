@@ -822,6 +822,7 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
     beta = traits.Float(default=2.0, usedefault=True, desc=('Exponent for mapping '
                       'intensity difference to the joint error. Default = 2.0'))
     retain_label_posterior_images = traits.Bool(False, argstr='-r', usedefault=True, #todo: check syntax
+                         requires=['atlas_segmentation_image'],
                          desc=('Retain label posterior probability images. Requires '
                                'atlas segmentations to be specified. Default = false'))
     retain_atlas_voting_images = traits.Bool(False, argstr='-f', usedefault=True, #todo: check syntax
