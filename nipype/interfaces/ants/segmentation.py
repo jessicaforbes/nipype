@@ -837,15 +837,21 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
                               'correlation (PC) and mean squares (MSQ). Default = '
                               'PC (Pearson correlation).'))
     search_radius = traits.ListInt(minlen=3, maxlen=3, argstr='-s %s',
-                                   desc='Search radius for similarity measures. '
-                                        'Default = 3x3x3')
-    mask_image = File(argstr='--x %s', exists=True, desc='If a mask image '
+                                   desc=('Search radius for similarity measures. '
+                                        'Default = 3x3x3'))
+    exclusion_image = traits.Str(argstr='-e %s', desc=('Specify an exclusion region '
+                                                       'for the given label.'))
+    mask_image = File(argstr='-x %s', exists=True, desc='If a mask image '
                       'is specified, fusion is only performed in the mask region.')
     output_image = InputMultiPath(File(exists=True), argstr="-o %s...",
                                   desc='The output is the intensity and/or label '
                                        'fusion image. Additional optional outputs '
                                        'include the label posterior probability '
                                        'images and the atlas voting weight images. ')
+    version = traits.Bool(False, argstr="--version", desc=('Get version information.'))
+    verbose = traits.Bool(False, argstr="-v", desc=('Verbose output.'))
+    short_help = traits.Bool(False, argstr="-h", desc=('Print the help menu (short version).'))
+    help = traits.Bool(False, argstr="--help", desc=('Print the help menu.'))
 
 
 class AntsJointFusionOutputSpec(TraitedSpec):
@@ -870,9 +876,9 @@ class AntsJointFusion(ANTSCommand):
                 retval = '-m {0}[{1},{2}]'.format(
                     self.inputs.method, self.inputs.alpha, self.inputs.beta)
         elif opt == 'patch_radius':
-            retval = '-rp {0}'.format(self._format_xarray(val))
+            retval = '-p {0}'.format(self._format_xarray(val))
         elif opt == 'search_radius':
-            retval = '-rs {0}'.format(self._format_xarray(val))
+            retval = '-s {0}'.format(self._format_xarray(val))
         else:
             if opt == 'warped_intensity_images':
                 assert len(val) == self.inputs.modalities * len(self.inputs.warped_label_images), "Number of intensity images and label maps must be the same {0}!={1}".format(
