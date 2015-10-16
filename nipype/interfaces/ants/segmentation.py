@@ -846,7 +846,7 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
                                   desc=('Specify an exclusion region for the given label.'))
     mask_image = File(argstr='-x %s', exists=True, desc='If a mask image '
                       'is specified, fusion is only performed in the mask region.')
-    output_image = InputMultiPath(File(exists=True), argstr="-o %s...",
+    output_image = traits.List(traits.Str(), argstr="-o %s...",
                                   desc='The output is the intensity and/or label '
                                        'fusion image. Additional optional outputs '
                                        'include the label posterior probability '
