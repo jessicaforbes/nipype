@@ -869,7 +869,7 @@ class AntsJointFusion(ANTSCommand):
     """
     input_spec = AntsJointFusionInputSpec
     output_spec = AntsJointFusionOutputSpec
-    _cmd = 'antsjointfusion'
+    _cmd = 'antsJointFusion'
 
     def _format_arg(self, opt, spec, val):
         if opt == 'exclusion_image_label':
@@ -884,9 +884,9 @@ class AntsJointFusion(ANTSCommand):
             retval = '-s {0}'.format(self._format_xarray(val))
         else:
             if opt == 'atlas_segmentation_image':
-                assert len(val) == len(self.inputs.atlas_image), "Number of specified " \
+                """assert len(val) == len(self.inputs.atlas_image), "Number of specified " \
                     "segmentations should be identical to the number of atlas image " \
-                    "sets {0}!={1}".format(len(val), len(self.inputs.atlas_image))
+                    "sets {0}!={1}".format(len(val), len(self.inputs.atlas_image))"""
             return super(ANTSCommand, self)._format_arg(opt, spec, val)
         return retval
 
