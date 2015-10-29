@@ -803,15 +803,15 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
                                  'as a specified-dimensional image. If not '
                                  'specified, the program tries to infer the '
                                  'dimensionality from the input image.')
-    target_image = InputMultiPath(File(exists=True), argstr='-t %s...',
+    target_image = InputMultiPath(InputMultiPath(File(exists=True)), argstr='-t %s...',
                                   mandatory=True, desc='The target image (or '
                                   'multimodal target images) assumed to be '
                                   'aligned to a common image domain.')
-    atlas_image = InputMultiPath(File(exists=True), argstr="-g %s...",
+    atlas_image = InputMultiPath(InputMultiPath(File(exists=True)), argstr="-g %s...",
                                  mandatory=True, desc='The atlas image (or '
                                  'multimodal atlas images) assumed to be '
                                  'aligned to a common image domain.')
-    atlas_segmentation_image = InputMultiPath(File(exists=True), argstr="-l %s",
+    atlas_segmentation_image = InputMultiPath(File(exists=True), argstr="-l %s...",
                                   mandatory=True, desc='The atlas segmentation '
                                   'images. For performing label fusion the number '
                                   'of specified segmentations should be identical '
@@ -884,9 +884,9 @@ class AntsJointFusion(ANTSCommand):
             retval = '-s {0}'.format(self._format_xarray(val))
         else:
             if opt == 'atlas_segmentation_image':
-                """assert len(val) == len(self.inputs.atlas_image), "Number of specified " \
+                assert len(val) == len(self.inputs.atlas_image), "Number of specified " \
                     "segmentations should be identical to the number of atlas image " \
-                    "sets {0}!={1}".format(len(val), len(self.inputs.atlas_image))"""
+                    "sets {0}!={1}".format(len(val), len(self.inputs.atlas_image))
             return super(ANTSCommand, self)._format_arg(opt, spec, val)
         return retval
 
