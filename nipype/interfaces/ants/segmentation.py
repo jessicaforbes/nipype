@@ -803,11 +803,11 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
                                  'as a specified-dimensional image. If not '
                                  'specified, the program tries to infer the '
                                  'dimensionality from the input image.')
-    target_image = InputMultiPath(InputMultiPath(File(exists=True)), argstr='-t %s...',
+    target_image = traits.List(InputMultiPath(File(exists=True)), argstr='-t %s...',
                                   mandatory=True, desc='The target image (or '
                                   'multimodal target images) assumed to be '
                                   'aligned to a common image domain.')
-    atlas_image = InputMultiPath(InputMultiPath(File(exists=True)), argstr="-g %s...",
+    atlas_image = traits.List(InputMultiPath(File(exists=True)), argstr="-g %s...",
                                  mandatory=True, desc='The atlas image (or '
                                  'multimodal atlas images) assumed to be '
                                  'aligned to a common image domain.')
