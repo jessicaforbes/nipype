@@ -797,8 +797,7 @@ class JointFusion(ANTSCommand):
         return outputs
 
 class AntsJointFusionInputSpec(ANTSCommandInputSpec):
-    dimension = traits.Enum(3, 2, 4, argstr='-d %d', usedefault=True, #todo: usedefault??
-                            mandatory=True,
+    dimension = traits.Enum(3, 2, 4, argstr='-d %d', usedefault=False,
                             desc='This option forces the image to be treated '
                                  'as a specified-dimensional image. If not '
                                  'specified, the program tries to infer the '
@@ -868,17 +867,16 @@ class AntsJointFusion(ANTSCommand):
 
     >>> from nipype.interfaces.ants import AntsJointFusion
     >>> at = AntsJointFusion()
-    >>> at.inputs.dimension = 3
     >>> at.inputs.output_image = ['ants_fusion_labelimage_output.nii']
     >>> at.inputs.atlas_image = [ ['subj1_1.nii.gz','subj1_2.nii.gz'] ]
     >>> at.inputs.atlas_segmentation_image = ['subj1_segmentation.nii.gz']
     >>> at.inputs.target_image = ['T1.nii.gz','T2.nii.gz']
     >>> print at.cmdline
-    'antsJointFusion -a 0.1 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -l subj1_segmentation.nii.gz -b 2.0 -d 3 -o ants_fusion_labelimage_output.nii -m PC -t ['T1.nii.gz'] -t ['T2.nii.gz']'
+    'antsJointFusion -a 0.1 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -l subj1_segmentation.nii.gz -b 2.0 -o ants_fusion_labelimage_output.nii -m PC -t ['T1.nii.gz'] -t ['T2.nii.gz']'
 
     >>> at.inputs.target_image = [ ['T1.nii.gz','T2.nii.gz'] ]
     >>> print at.cmdline
-    'antsJointFusion -a 0.1 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -l subj1_segmentation.nii.gz -b 2.0 -d 3 -o ants_fusion_labelimage_output.nii -m PC -t ['T1.nii.gz', 'T2.nii.gz']'
+    'antsJointFusion -a 0.1 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -l subj1_segmentation.nii.gz -b 2.0 -o ants_fusion_labelimage_output.nii -m PC -t ['T1.nii.gz', 'T2.nii.gz']'
 
     >>> at.inputs.atlas_image = [ ['subj1_1.nii.gz','subj1_2.nii.gz'],
                                   ['subj2_1.nii.gz','subj2_2.nii.gz'] ]
@@ -886,8 +884,9 @@ class AntsJointFusion(ANTSCommand):
                                               'subj2_segmentation.nii.gz']
     >>> print at.cmdline
     'antsJointFusion -a 0.1 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -g ['subj2_1.nii.gz', 'subj2_2.nii.gz'] -l subj1_segmentation.nii.gz -l subj2_segmentation.nii.gz
-    -b 2.0 -d 3 -o ants_fusion_labelimage_output.nii -m PC -t ['T1.nii.gz', 'T2.nii.gz']'
+    -b 2.0 -o ants_fusion_labelimage_output.nii -m PC -t ['T1.nii.gz', 'T2.nii.gz']'
 
+    >>> at.inputs.dimension = 3
     >>> at.inputs.alpha = 0.5
     >>> at.inputs.beta = 1.0
     >>> at.inputs.patch_radius = [3,2,1]
