@@ -830,7 +830,7 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
     patch_radius = traits.ListInt(minlen=3, maxlen=3, argstr='-p %s',
                                   desc=('Patch radius for similarity measures.'
                                         'Default: 2x2x2'))
-    patch_metric = traits.Enum('PC', 'MSQ', argstr='-m %s', usedefault=True,
+    patch_metric = traits.Enum('PC', 'MSQ', argstr='-m %s', usedefault=False,
                         desc=('Metric to be used in determining the most similar '
                               'neighborhood patch. Options include Pearson\'s '
                               'correlation (PC) and mean squares (MSQ). Default = '
