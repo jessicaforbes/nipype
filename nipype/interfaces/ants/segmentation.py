@@ -838,9 +838,9 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
     search_radius = traits.ListInt(minlen=3, maxlen=3, argstr='-s %s',
                                    desc=('Search radius for similarity measures. '
                                         'Default = 3x3x3'))
-    exclusion_image_label = traits.List(traits.Str(), requires=['exclusion_image'],
+    exclusion_image_label = traits.List(traits.Str(), argstr='-e %s', requires=['exclusion_image'],
                                        desc=('Specify a label for the exclusion region.'))
-    exclusion_image = traits.List(File(exists=True), requires=['exclusion_image_label'],
+    exclusion_image = traits.List(File(exists=True),
                                   desc=('Specify an exclusion region for the given label.'))
     mask_image = File(argstr='-x %s', exists=True, desc='If a mask image '
                       'is specified, fusion is only performed in the mask region.')
@@ -906,6 +906,7 @@ class AntsJointFusion(ANTSCommand):
                 retval.append('-e {0}[{1}]'.format(
                     self.inputs.exclusion_image_label[ii],
                     self.inputs.exclusion_image[ii]))
+            retval = ' '.join(retval)
         elif opt == 'patch_radius':
             retval = '-p {0}'.format(self._format_xarray(val))
         elif opt == 'search_radius':
