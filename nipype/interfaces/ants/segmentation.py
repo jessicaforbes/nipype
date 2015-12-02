@@ -793,7 +793,7 @@ class JointFusion(ANTSCommand):
     def _list_outputs(self):
         outputs = self._outputs().get()
         outputs['output_label_image'] = os.path.abspath(
-            self.inputs.output_image[0])
+            self.inputs.output_label_image)
         return outputs
 
 class AntsJointFusionInputSpec(ANTSCommandInputSpec):
@@ -923,5 +923,5 @@ class AntsJointFusion(ANTSCommand):
     def _list_outputs(self):
         outputs = self._outputs().get()
         outputs['output_label_image'] = os.path.abspath(
-            self.inputs.output_label_image)
+            self.inputs.output_image[0])
         return outputs
