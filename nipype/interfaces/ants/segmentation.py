@@ -819,13 +819,13 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
                          'term added to matrix Mx for calculating the inverse. Default = 0.1'))
     beta = traits.Float(default_value=2.0, usedefault=True, argstr='-b %s', desc=('Exponent for mapping '
                       'intensity difference to the joint error. Default = 2.0'))
-    retain_label_posterior_images = traits.Bool(False, argstr='-r', usedefault=True, #todo: check syntax
+    retain_label_posterior_images = traits.Bool(False, argstr='-r', usedefault=True,
                          requires=['atlas_segmentation_image'],
                          desc=('Retain label posterior probability images. Requires '
                                'atlas segmentations to be specified. Default = false'))
-    retain_atlas_voting_images = traits.Bool(False, argstr='-f', usedefault=True, #todo: check syntax
+    retain_atlas_voting_images = traits.Bool(False, argstr='-f', usedefault=True,
                          desc=('Retain atlas voting images. Default = false'))
-    constrain_nonnegative = traits.Bool(False, argstr='-c', usedefault=True, #todo: check syntax
+    constrain_nonnegative = traits.Bool(False, argstr='-c', usedefault=True,
                          desc=('Constrain solution to non-negative weights.'))
     patch_radius = traits.ListInt(minlen=3, maxlen=3, argstr='-p %s',
                                   desc=('Patch radius for similarity measures.'
@@ -873,28 +873,42 @@ class AntsJointFusion(ANTSCommand):
     >>> at.inputs.atlas_segmentation_image = ['subj1_segmentation.nii.gz']
     >>> at.inputs.target_image = ['T1.nii.gz','T2.nii.gz']
     >>> print at.cmdline
-    'antsJointFusion -a 0.1 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -l subj1_segmentation.nii.gz -b 2.0 -o ants_fusion_labelimage_output.nii -t ['T1.nii.gz'] -t ['T2.nii.gz']'
+    'antsJointFusion -a 0.1 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -l subj1_segmentation.nii.gz
+    -b 2.0 -o ants_fusion_labelimage_output.nii -s 3x3x3 -t ['T1.nii.gz'] -t ['T2.nii.gz']'
 
     >>> at.inputs.target_image = [ ['T1.nii.gz','T2.nii.gz'] ]
     >>> print at.cmdline
-    'antsJointFusion -a 0.1 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -l subj1_segmentation.nii.gz -b 2.0 -o ants_fusion_labelimage_output.nii -t ['T1.nii.gz', 'T2.nii.gz']'
+    'antsJointFusion -a 0.1 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -l subj1_segmentation.nii.gz
+    -b 2.0 -o ants_fusion_labelimage_output.nii -s 3x3x3 -t ['T1.nii.gz', 'T2.nii.gz']'
 
     >>> at.inputs.atlas_image = [ ['subj1_1.nii.gz','subj1_2.nii.gz'],
                                   ['subj2_1.nii.gz','subj2_2.nii.gz'] ]
     >>> at.inputs.atlas_segmentation_image = ['subj1_segmentation.nii.gz',
                                               'subj2_segmentation.nii.gz']
     >>> print at.cmdline
-    'antsJointFusion -a 0.1 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -g ['subj2_1.nii.gz', 'subj2_2.nii.gz'] -l subj1_segmentation.nii.gz -l subj2_segmentation.nii.gz
-    -b 2.0 -o ants_fusion_labelimage_output.nii -t ['T1.nii.gz', 'T2.nii.gz']'
+    'antsJointFusion -a 0.1 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -g ['subj2_1.nii.gz', 'subj2_2.nii.gz']
+    -l subj1_segmentation.nii.gz -l subj2_segmentation.nii.gz
+    -b 2.0 -o ants_fusion_labelimage_output.nii -s 3x3x3 -t ['T1.nii.gz', 'T2.nii.gz']'
 
     >>> at.inputs.dimension = 3
     >>> at.inputs.alpha = 0.5
     >>> at.inputs.beta = 1.0
     >>> at.inputs.patch_radius = [3,2,1]
-    >>> at.inputs.search_radius = [1,2,3]
+    >>> at.inputs.search_radius = [3]
     >>> print at.cmdline
-    'antsJointFusion -a 0.5 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -g ['subj2_1.nii.gz', 'subj2_2.nii.gz'] -l subj1_segmentation.nii.gz -l subj2_segmentation.nii.gz
-    -b 1.0 -d 3 -o ants_fusion_labelimage_output.nii -m PC -p 3x2x1 -s 1x2x3 -t ['T1.nii.gz', 'T2.nii.gz']'
+    'antsJointFusion -a 0.5 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -g ['subj2_1.nii.gz', 'subj2_2.nii.gz']
+    -l subj1_segmentation.nii.gz -l subj2_segmentation.nii.gz
+    -b 1.0 -d 3 -o ants_fusion_labelimage_output.nii -p 3x2x1 -s 3 -t ['T1.nii.gz', 'T2.nii.gz']'
+
+    >>> at.inputs.search_radius = ['file.nii.gz']
+    >>> at.inputs.verbose = True
+    >>> at.inputs.exclusion_image = ['label3_exclusion.nii.gz', 'label2_exclusion.nii.gz']
+    >>> at.inputs.exclusion_image_label = ['3','2']
+    >>> print at.cmdline
+    'antsJointFusion -a 0.5 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -g ['subj2_1.nii.gz', 'subj2_2.nii.gz']
+    -l subj1_segmentation.nii.gz -l subj2_segmentation.nii.gz
+    -b 1.0 -d 3 -o ants_fusion_labelimage_output.nii -p 3x2x1 -s file.nii.gz -t ['T1.nii.gz', 'T2.nii.gz']
+    -v -e 3[label3_exclusion.nii.gz] -e 2[label2_exclusion.nii.gz]'
     """
     input_spec = AntsJointFusionInputSpec
     output_spec = AntsJointFusionOutputSpec
