@@ -845,7 +845,7 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
                                   desc=('Specify an exclusion region for the given label.'))
     mask_image = File(argstr='-x %s', exists=True, desc='If a mask image '
                       'is specified, fusion is only performed in the mask region.')
-    output_image = traits.List(traits.Str(), argstr="-o %s...",
+    output_image = traits.List(traits.Str(), minlen=1, maxlen=4, argstr="-o %s",
                                   desc='The output is the intensity and/or label '
                                        'fusion image. Additional optional outputs '
                                        'include the label posterior probability '
@@ -858,7 +858,9 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
 
 class AntsJointFusionOutputSpec(TraitedSpec):
     output_label_image = File(exists=True)
-    # TODO: optional outputs - output_posteriors, output_voting_weights
+    intensity_fusion_image_file_name_format = traits.Str()
+    label_posterior_probability_image_file_name_format = traits.Str()
+    atlas_voting_weight_image_file_name_format = traits.Str()
 
 
 class AntsJointFusion(ANTSCommand):
@@ -909,6 +911,16 @@ class AntsJointFusion(ANTSCommand):
     -l subj1_segmentation.nii.gz -l subj2_segmentation.nii.gz
     -b 1.0 -d 3 -o ants_fusion_labelimage_output.nii -p 3x2x1 -s file.nii.gz -t ['T1.nii.gz', 'T2.nii.gz']
     -v -e 3[label3_exclusion.nii.gz] -e 2[label2_exclusion.nii.gz]'
+
+    >>> at.inputs.output_image = ['MALF_HDAtlas20_2015_label.nii.gz', 'antsJointFusionIntensity_%d.nii.gz',
+                                  'antsJointFusionPosterior_%d.nii.gz', 'antsJointFusionVotingWeight_%d.nii.gz']
+    >>> print at.cmdline
+    'antsJointFusion -a 0.5 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -g ['subj2_1.nii.gz', 'subj2_2.nii.gz']
+    -l subj1_segmentation.nii.gz -l subj2_segmentation.nii.gz
+    -b 1.0 -d 3 -e 3[label3_exclusion.nii.gz] -e 2[label2_exclusion.nii.gz]
+    -o ['MALF_HDAtlas20_2015_label.nii.gz', 'antsJointFusionIntensity_%d.nii.gz',
+    'antsJointFusionPosterior_%d.nii.gz', 'antsJointFusionVotingWeight_%d.nii.gz']
+    -p 3x2x1 -s file.nii.gz -t ['T1.nii.gz', 'T2.nii.gz'] -v'
     """
     input_spec = AntsJointFusionInputSpec
     output_spec = AntsJointFusionOutputSpec
@@ -926,6 +938,11 @@ class AntsJointFusion(ANTSCommand):
             retval = '-p {0}'.format(self._format_xarray(val))
         elif opt == 'search_radius':
             retval = '-s {0}'.format(self._format_xarray(val))
+        elif opt == 'output_image':
+            if len(val) == 1:
+                retval = '-o {0}'.format(val[0])
+            else:
+                retval = '-o {0}'.format(val)
         else:
             if opt == 'atlas_segmentation_image':
                 assert len(val) == len(self.inputs.atlas_image), "Number of specified " \
@@ -936,6 +953,21 @@ class AntsJointFusion(ANTSCommand):
 
     def _list_outputs(self):
         outputs = self._outputs().get()
-        outputs['output_label_image'] = os.path.abspath(
-            self.inputs.output_image[0])
+        if len(self.inputs.output_image) == 1:
+            if '%' in self.inputs.output_image[0]:
+                outputs['intensity_fusion_image_file_name_format'] = os.path.abspath(
+                  self.inputs.output_image[0])
+            else:
+                outputs['output_label_image'] = os.path.abspath(self.inputs.output_image[0])
+        else:
+            outputs['output_label_image'] = os.path.abspath(self.inputs.output_image[0])
+            outputs['intensity_fusion_image_file_name_format'] = os.path.abspath(
+              self.inputs.output_image[1])
+        if len(self.inputs.output_image) >= 3:
+            outputs['label_posterior_probability_image_file_name_format'] = os.path.abspath(
+              self.inputs.output_image[2])
+        if len(self.inputs.output_image) == 4:
+            outputs['atlas_voting_weight_image_file_name_format'] = os.path.abspath(
+              self.inputs.output_image[3])
+
         return outputs
