@@ -869,58 +869,40 @@ class AntsJointFusion(ANTSCommand):
     --------
 
     >>> from nipype.interfaces.ants import AntsJointFusion
-    >>> at = AntsJointFusion()
-    >>> at.inputs.output_image = ['ants_fusion_labelimage_output.nii']
-    >>> at.inputs.atlas_image = [ ['subj1_1.nii.gz','subj1_2.nii.gz'] ]
-    >>> at.inputs.atlas_segmentation_image = ['subj1_segmentation.nii.gz']
-    >>> at.inputs.target_image = ['T1.nii.gz','T2.nii.gz']
-    >>> print at.cmdline
-    'antsJointFusion -a 0.1 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -l subj1_segmentation.nii.gz
-    -b 2.0 -o ants_fusion_labelimage_output.nii -s 3x3x3 -t ['T1.nii.gz'] -t ['T2.nii.gz']'
+    >>> antsjointfusion = AntsJointFusion()
+    >>> antsjointfusion.inputs.output_image = ['ants_fusion_label_output.nii']
+    >>> antsjointfusion.inputs.atlas_image = [ ['rc1s1.nii','rc1s2.nii'] ]
+    >>> antsjointfusion.inputs.atlas_segmentation_image = ['segmentation0.nii.gz']
+    >>> antsjointfusion.inputs.target_image = ['T1.nii','T2.nii']
+    >>> antsjointfusion.cmdline
 
-    >>> at.inputs.target_image = [ ['T1.nii.gz','T2.nii.gz'] ]
-    >>> print at.cmdline
-    'antsJointFusion -a 0.1 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -l subj1_segmentation.nii.gz
-    -b 2.0 -o ants_fusion_labelimage_output.nii -s 3x3x3 -t ['T1.nii.gz', 'T2.nii.gz']'
+    >>> antsjointfusion.inputs.target_image = [ ['T1.nii','T2.nii'] ]
+    >>> antsjointfusion.cmdline
 
-    >>> at.inputs.atlas_image = [ ['subj1_1.nii.gz','subj1_2.nii.gz'],
-                                  ['subj2_1.nii.gz','subj2_2.nii.gz'] ]
-    >>> at.inputs.atlas_segmentation_image = ['subj1_segmentation.nii.gz',
-                                              'subj2_segmentation.nii.gz']
-    >>> print at.cmdline
-    'antsJointFusion -a 0.1 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -g ['subj2_1.nii.gz', 'subj2_2.nii.gz']
-    -l subj1_segmentation.nii.gz -l subj2_segmentation.nii.gz
-    -b 2.0 -o ants_fusion_labelimage_output.nii -s 3x3x3 -t ['T1.nii.gz', 'T2.nii.gz']'
+    >>> antsjointfusion.inputs.atlas_image = [ ['rc1s1.nii','rc1s2.nii'],
+                                               ['rc2s1.nii','rc2s2.nii'] ]
+    >>> antsjointfusion.inputs.atlas_segmentation_image = ['segmentation0.nii.gz',
+                                                           'segmentation1.nii.gz']
+    >>> antsjointfusion.cmdline
 
-    >>> at.inputs.dimension = 3
-    >>> at.inputs.alpha = 0.5
-    >>> at.inputs.beta = 1.0
-    >>> at.inputs.patch_radius = [3,2,1]
-    >>> at.inputs.search_radius = [3]
-    >>> print at.cmdline
-    'antsJointFusion -a 0.5 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -g ['subj2_1.nii.gz', 'subj2_2.nii.gz']
-    -l subj1_segmentation.nii.gz -l subj2_segmentation.nii.gz
-    -b 1.0 -d 3 -o ants_fusion_labelimage_output.nii -p 3x2x1 -s 3 -t ['T1.nii.gz', 'T2.nii.gz']'
+    >>> antsjointfusion.inputs.dimension = 3
+    >>> antsjointfusion.inputs.alpha = 0.5
+    >>> antsjointfusion.inputs.beta = 1.0
+    >>> antsjointfusion.inputs.patch_radius = [3,2,1]
+    >>> antsjointfusion.inputs.search_radius = [3]
+    >>> antsjointfusion.cmdline
 
-    >>> at.inputs.search_radius = ['file.nii.gz']
-    >>> at.inputs.verbose = True
-    >>> at.inputs.exclusion_image = ['label3_exclusion.nii.gz', 'label2_exclusion.nii.gz']
-    >>> at.inputs.exclusion_image_label = ['3','2']
-    >>> print at.cmdline
-    'antsJointFusion -a 0.5 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -g ['subj2_1.nii.gz', 'subj2_2.nii.gz']
-    -l subj1_segmentation.nii.gz -l subj2_segmentation.nii.gz
-    -b 1.0 -d 3 -o ants_fusion_labelimage_output.nii -p 3x2x1 -s file.nii.gz -t ['T1.nii.gz', 'T2.nii.gz']
-    -v -e 3[label3_exclusion.nii.gz] -e 2[label2_exclusion.nii.gz]'
+    >>> antsjointfusion.inputs.search_radius = ['mask.nii']
+    >>> antsjointfusion.inputs.verbose = True
+    >>> antsjointfusion.inputs.exclusion_image = ['roi01.nii', 'roi02.nii']
+    >>> antsjointfusion.inputs.exclusion_image_label = ['1','2']
+    >>> antsjointfusion.cmdline
 
-    >>> at.inputs.output_image = ['MALF_HDAtlas20_2015_label.nii.gz', 'antsJointFusionIntensity_%d.nii.gz',
-                                  'antsJointFusionPosterior_%d.nii.gz', 'antsJointFusionVotingWeight_%d.nii.gz']
-    >>> print at.cmdline
-    'antsJointFusion -a 0.5 -g ['subj1_1.nii.gz', 'subj1_2.nii.gz'] -g ['subj2_1.nii.gz', 'subj2_2.nii.gz']
-    -l subj1_segmentation.nii.gz -l subj2_segmentation.nii.gz
-    -b 1.0 -d 3 -e 3[label3_exclusion.nii.gz] -e 2[label2_exclusion.nii.gz]
-    -o ['MALF_HDAtlas20_2015_label.nii.gz', 'antsJointFusionIntensity_%d.nii.gz',
-    'antsJointFusionPosterior_%d.nii.gz', 'antsJointFusionVotingWeight_%d.nii.gz']
-    -p 3x2x1 -s file.nii.gz -t ['T1.nii.gz', 'T2.nii.gz'] -v'
+    >>> antsjointfusion.inputs.output_image = ['antsJointFusion_label.nii.gz',
+                                               'antsJointFusionIntensity_%d.nii.gz',
+                                               'antsJointFusionPosterior_%d.nii.gz',
+                                               'antsJointFusionVotingWeight_%d.nii.gz']
+    >>> antsjointfusion.cmdline
     """
     input_spec = AntsJointFusionInputSpec
     output_spec = AntsJointFusionOutputSpec
