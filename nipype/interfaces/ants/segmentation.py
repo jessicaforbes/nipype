@@ -948,17 +948,24 @@ class AntsJointFusion(ANTSCommand):
     >>> antsjointfusion.inputs.output_image = ['ants_fusion_label_output.nii']
     >>> antsjointfusion.inputs.atlas_image = [ ['rc1s1.nii','rc1s2.nii'] ]
     >>> antsjointfusion.inputs.atlas_segmentation_image = ['segmentation0.nii.gz']
-    >>> antsjointfusion.inputs.target_image = ['T1.nii','T2.nii']
+    >>> antsjointfusion.inputs.target_image = ['im1.nii', 'im2.nii']
     >>> antsjointfusion.cmdline
+    "antsJointFusion -a 0.1 -g ['rc1s1.nii', 'rc1s2.nii'] -l segmentation0.nii.gz \
+-b 2.0 -o ants_fusion_label_output.nii -s 3x3x3 -t ['im1.nii'] -t ['im2.nii']"
 
-    >>> antsjointfusion.inputs.target_image = [ ['T1.nii','T2.nii'] ]
+    >>> antsjointfusion.inputs.target_image = [ ['im1.nii', 'im2.nii'] ]
     >>> antsjointfusion.cmdline
+    "antsJointFusion -a 0.1 -g ['rc1s1.nii', 'rc1s2.nii'] -l segmentation0.nii.gz \
+-b 2.0 -o ants_fusion_label_output.nii -s 3x3x3 -t ['im1.nii', 'im2.nii']"
 
     >>> antsjointfusion.inputs.atlas_image = [ ['rc1s1.nii','rc1s2.nii'],
-                                               ['rc2s1.nii','rc2s2.nii'] ]
+    ...                                        ['rc2s1.nii','rc2s2.nii'] ]
     >>> antsjointfusion.inputs.atlas_segmentation_image = ['segmentation0.nii.gz',
-                                                           'segmentation1.nii.gz']
+    ...                                                    'segmentation1.nii.gz']
     >>> antsjointfusion.cmdline
+    "antsJointFusion -a 0.1 -g ['rc1s1.nii', 'rc1s2.nii'] -g ['rc2s1.nii', 'rc2s2.nii'] \
+-l segmentation0.nii.gz -l segmentation1.nii.gz -b 2.0 -o ants_fusion_label_output.nii \
+-s 3x3x3 -t ['im1.nii', 'im2.nii']"
 
     >>> antsjointfusion.inputs.dimension = 3
     >>> antsjointfusion.inputs.alpha = 0.5
@@ -966,18 +973,30 @@ class AntsJointFusion(ANTSCommand):
     >>> antsjointfusion.inputs.patch_radius = [3,2,1]
     >>> antsjointfusion.inputs.search_radius = [3]
     >>> antsjointfusion.cmdline
+    "antsJointFusion -a 0.5 -g ['rc1s1.nii', 'rc1s2.nii'] -g ['rc2s1.nii', 'rc2s2.nii'] \
+-l segmentation0.nii.gz -l segmentation1.nii.gz -b 1.0 -d 3 -o ants_fusion_label_output.nii \
+-p 3x2x1 -s 3 -t ['im1.nii', 'im2.nii']"
 
     >>> antsjointfusion.inputs.search_radius = ['mask.nii']
     >>> antsjointfusion.inputs.verbose = True
     >>> antsjointfusion.inputs.exclusion_image = ['roi01.nii', 'roi02.nii']
     >>> antsjointfusion.inputs.exclusion_image_label = ['1','2']
     >>> antsjointfusion.cmdline
+    "antsJointFusion -a 0.5 -g ['rc1s1.nii', 'rc1s2.nii'] -g ['rc2s1.nii', 'rc2s2.nii'] \
+-l segmentation0.nii.gz -l segmentation1.nii.gz -b 1.0 -d 3 -e 1[roi01.nii] -e 2[roi02.nii] \
+-o ants_fusion_label_output.nii -p 3x2x1 -s mask.nii -t ['im1.nii', 'im2.nii'] -v"
 
     >>> antsjointfusion.inputs.output_image = ['antsJointFusion_label.nii.gz',
-                                               'antsJointFusionIntensity_%d.nii.gz',
-                                               'antsJointFusionPosterior_%d.nii.gz',
-                                               'antsJointFusionVotingWeight_%d.nii.gz']
+    ...                                        'antsJointFusionIntensity_%d.nii.gz',
+    ...                                        'antsJointFusionPosterior_%d.nii.gz',
+    ...                                        'antsJointFusionVotingWeight_%d.nii.gz']
     >>> antsjointfusion.cmdline
+    "antsJointFusion -a 0.5 -g ['rc1s1.nii', 'rc1s2.nii'] -g ['rc2s1.nii', 'rc2s2.nii'] \
+-l segmentation0.nii.gz -l segmentation1.nii.gz -b 1.0 -d 3 -e 1[roi01.nii] -e 2[roi02.nii] \
+-o ['antsJointFusion_label.nii.gz', 'antsJointFusionIntensity_%d.nii.gz', \
+'antsJointFusionPosterior_%d.nii.gz', 'antsJointFusionVotingWeight_%d.nii.gz'] \
+-p 3x2x1 -s mask.nii -t ['im1.nii', 'im2.nii'] -v"
+
     """
     input_spec = AntsJointFusionInputSpec
     output_spec = AntsJointFusionOutputSpec
