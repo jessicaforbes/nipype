@@ -925,10 +925,7 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
                                        'fusion image. Additional optional outputs '
                                        'include the label posterior probability '
                                        'images and the atlas voting weight images. ')
-    version = traits.Bool(False, argstr="--version", desc=('Get version information.'))
     verbose = traits.Bool(False, argstr="-v", desc=('Verbose output.'))
-    short_help = traits.Bool(False, argstr="-h", desc=('Print the help menu (short version).'))
-    help = traits.Bool(False, argstr="--help", desc=('Print the help menu.'))
 
 
 class AntsJointFusionOutputSpec(TraitedSpec):
