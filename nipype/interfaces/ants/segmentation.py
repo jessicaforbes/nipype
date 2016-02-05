@@ -920,19 +920,30 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
                                   desc=('Specify an exclusion region for the given label.'))
     mask_image = File(argstr='-x %s', exists=True, desc='If a mask image '
                       'is specified, fusion is only performed in the mask region.')
-    output_image = traits.List(traits.Str(), minlen=1, maxlen=4, argstr="-o %s",
-                                  desc='The output is the intensity and/or label '
-                                       'fusion image. Additional optional outputs '
-                                       'include the label posterior probability '
-                                       'images and the atlas voting weight images. ')
+    out_label_fusion = File(argstr="%s", hash_files=False,
+                            desc='The output label fusion image.')
+    out_intensity_fusion_name_format = traits.Str('antsJointFusionIntensity_%d.nii.gz',
+                                                  argstr="", desc='Optional intensity fusion '
+                                                                  'image file name format.')
+    out_label_post_prob_name_format = traits.Str('antsJointFusionPosterior_%d.nii.gz',
+                                                 requires=['out_label_fusion',
+                                                           'out_intensity_fusion_name_format'],
+                                                 desc='Optional label posterior probability '
+                                                      'image file name format.')
+    out_atlas_voting_weight_name_format = traits.Str('antsJointFusionVotingWeight_%d.nii.gz',
+                                                     requires=['out_label_fusion',
+                                                               'out_intensity_fusion_name_format',
+                                                               'out_label_post_prob_name_format'],
+                                                     desc='Optional atlas voting weight image '
+                                                          'file name format.')
     verbose = traits.Bool(False, argstr="-v", desc=('Verbose output.'))
 
 
 class AntsJointFusionOutputSpec(TraitedSpec):
-    output_label_image = File(exists=True)
-    intensity_fusion_image_file_name_format = traits.Str()
-    label_posterior_probability_image_file_name_format = traits.Str()
-    atlas_voting_weight_image_file_name_format = traits.Str()
+    out_label_fusion = File()
+    out_intensity_fusion_name_format = traits.Str()
+    out_label_post_prob_name_format = traits.Str()
+    out_atlas_voting_weight_name_format = traits.Str()
 
 
 class AntsJointFusion(ANTSCommand):
@@ -942,7 +953,7 @@ class AntsJointFusion(ANTSCommand):
 
     >>> from nipype.interfaces.ants import AntsJointFusion
     >>> antsjointfusion = AntsJointFusion()
-    >>> antsjointfusion.inputs.output_image = ['ants_fusion_label_output.nii']
+    >>> antsjointfusion.inputs.out_label_fusion = 'ants_fusion_label_output.nii'
     >>> antsjointfusion.inputs.atlas_image = [ ['rc1s1.nii','rc1s2.nii'] ]
     >>> antsjointfusion.inputs.atlas_segmentation_image = ['segmentation0.nii.gz']
     >>> antsjointfusion.inputs.target_image = ['im1.nii', 'im2.nii']
@@ -983,15 +994,15 @@ class AntsJointFusion(ANTSCommand):
 -l segmentation0.nii.gz -l segmentation1.nii.gz -b 1.0 -d 3 -e 1[roi01.nii] -e 2[roi02.nii] \
 -o ants_fusion_label_output.nii -p 3x2x1 -s mask.nii -t ['im1.nii', 'im2.nii'] -v"
 
-    >>> antsjointfusion.inputs.output_image = ['antsJointFusion_label.nii.gz',
-    ...                                        'antsJointFusionIntensity_%d.nii.gz',
-    ...                                        'antsJointFusionPosterior_%d.nii.gz',
-    ...                                        'antsJointFusionVotingWeight_%d.nii.gz']
+    >>> antsjointfusion.inputs.out_label_fusion = 'ants_fusion_label_output.nii'
+    >>> antsjointfusion.inputs.out_intensity_fusion_name_format = 'ants_joint_fusion_intensity_%d.nii.gz'
+    >>> antsjointfusion.inputs.out_label_post_prob_name_format = 'ants_joint_fusion_posterior_%d.nii.gz'
+    >>> antsjointfusion.inputs.out_atlas_voting_weight_name_format = 'ants_joint_fusion_voting_weight_%d.nii.gz'
     >>> antsjointfusion.cmdline
     "antsJointFusion -a 0.5 -g ['rc1s1.nii', 'rc1s2.nii'] -g ['rc2s1.nii', 'rc2s2.nii'] \
--l segmentation0.nii.gz -l segmentation1.nii.gz -b 1.0 -d 3 -e 1[roi01.nii] -e 2[roi02.nii] \
--o ['antsJointFusion_label.nii.gz', 'antsJointFusionIntensity_%d.nii.gz', \
-'antsJointFusionPosterior_%d.nii.gz', 'antsJointFusionVotingWeight_%d.nii.gz'] \
+-l segmentation0.nii.gz -l segmentation1.nii.gz -b 1.0 -d 3 -e 1[roi01.nii] -e 2[roi02.nii]  \
+-o [ants_fusion_label_output.nii, ants_joint_fusion_intensity_%d.nii.gz, \
+ants_joint_fusion_posterior_%d.nii.gz, ants_joint_fusion_voting_weight_%d.nii.gz] \
 -p 3x2x1 -s mask.nii -t ['im1.nii', 'im2.nii'] -v"
 
     """
@@ -1011,11 +1022,27 @@ class AntsJointFusion(ANTSCommand):
             retval = '-p {0}'.format(self._format_xarray(val))
         elif opt == 'search_radius':
             retval = '-s {0}'.format(self._format_xarray(val))
-        elif opt == 'output_image':
-            if len(val) == 1:
-                retval = '-o {0}'.format(val[0])
+        elif opt == 'out_label_fusion':
+            if isdefined(self.inputs.out_intensity_fusion_name_format):
+                if isdefined(self.inputs.out_label_post_prob_name_format):
+                    if isdefined(self.inputs.out_atlas_voting_weight_name_format):
+                        retval = '-o [{0}, {1}, {2}, {3}]'.format(self.inputs.out_label_fusion,
+                                                self.inputs.out_intensity_fusion_name_format,
+                                                self.inputs.out_label_post_prob_name_format,
+                                                self.inputs.out_atlas_voting_weight_name_format)
+                    else:
+                        retval = '-o [{0}, {1}, {2}]'.format(self.inputs.out_label_fusion,
+                                                self.inputs.out_intensity_fusion_name_format,
+                                                self.inputs.out_label_post_prob_name_format)
+                else:
+                    retval = '-o [{0}, {1}]'.format(self.inputs.out_label_fusion,
+                                                self.inputs.out_intensity_fusion_name_format)
             else:
-                retval = '-o {0}'.format(val)
+                retval = '-o {0}'.format(self.inputs.out_label_fusion)
+        elif opt == 'out_intensity_fusion_name_format':
+            retval = ''
+            if not isdefined(self.inputs.out_label_fusion):
+                retval = '-o {0}'.format(self.inputs.out_intensity_fusion_name_format)
         else:
             if opt == 'atlas_segmentation_image':
                 assert len(val) == len(self.inputs.atlas_image), "Number of specified " \
@@ -1026,21 +1053,17 @@ class AntsJointFusion(ANTSCommand):
 
     def _list_outputs(self):
         outputs = self._outputs().get()
-        if len(self.inputs.output_image) == 1:
-            if '%' in self.inputs.output_image[0]:
-                outputs['intensity_fusion_image_file_name_format'] = os.path.abspath(
-                  self.inputs.output_image[0])
-            else:
-                outputs['output_label_image'] = os.path.abspath(self.inputs.output_image[0])
-        else:
-            outputs['output_label_image'] = os.path.abspath(self.inputs.output_image[0])
-            outputs['intensity_fusion_image_file_name_format'] = os.path.abspath(
-              self.inputs.output_image[1])
-        if len(self.inputs.output_image) >= 3:
-            outputs['label_posterior_probability_image_file_name_format'] = os.path.abspath(
-              self.inputs.output_image[2])
-        if len(self.inputs.output_image) == 4:
-            outputs['atlas_voting_weight_image_file_name_format'] = os.path.abspath(
-              self.inputs.output_image[3])
+        if isdefined(self.inputs.out_label_fusion):
+            outputs['out_label_fusion'] = os.path.abspath(
+                self.inputs.out_label_fusion)
+        if isdefined(self.inputs.out_intensity_fusion_name_format):
+            outputs['out_intensity_fusion_name_format'] = os.path.abspath(
+                self.inputs.out_intensity_fusion_name_format)
+        if isdefined(self.inputs.out_label_post_prob_name_format):
+            outputs['out_label_post_prob_name_format'] = os.path.abspath(
+                self.inputs.out_label_post_prob_name_format)
+        if isdefined(self.inputs.out_atlas_voting_weight_name_format):
+            outputs['out_atlas_voting_weight_name_format'] = os.path.abspath(
+                self.inputs.out_atlas_voting_weight_name_format)
 
         return outputs
