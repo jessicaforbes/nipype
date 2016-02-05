@@ -877,7 +877,7 @@ class AntsJointFusionInputSpec(ANTSCommandInputSpec):
                                  'as a specified-dimensional image. If not '
                                  'specified, the program tries to infer the '
                                  'dimensionality from the input image.')
-    target_image = traits.List(InputMultiPath(File(exists=True)), argstr='-t %s...',
+    target_image = traits.List(InputMultiPath(File(exists=True)), argstr='-t %s',
                                   mandatory=True, desc='The target image (or '
                                   'multimodal target images) assumed to be '
                                   'aligned to a common image domain.')
@@ -956,10 +956,10 @@ class AntsJointFusion(ANTSCommand):
     >>> antsjointfusion.inputs.out_label_fusion = 'ants_fusion_label_output.nii'
     >>> antsjointfusion.inputs.atlas_image = [ ['rc1s1.nii','rc1s2.nii'] ]
     >>> antsjointfusion.inputs.atlas_segmentation_image = ['segmentation0.nii.gz']
-    >>> antsjointfusion.inputs.target_image = ['im1.nii', 'im2.nii']
+    >>> antsjointfusion.inputs.target_image = ['im1.nii']
     >>> antsjointfusion.cmdline
     "antsJointFusion -a 0.1 -g ['rc1s1.nii', 'rc1s2.nii'] -l segmentation0.nii.gz \
--b 2.0 -o ants_fusion_label_output.nii -s 3x3x3 -t ['im1.nii'] -t ['im2.nii']"
+-b 2.0 -o ants_fusion_label_output.nii -s 3x3x3 -t ['im1.nii']"
 
     >>> antsjointfusion.inputs.target_image = [ ['im1.nii', 'im2.nii'] ]
     >>> antsjointfusion.cmdline
